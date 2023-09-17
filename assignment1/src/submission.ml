@@ -130,18 +130,37 @@ module Part1 = struct
 			in rev [] ls
 
 		(* 
+			Split a list `ls` into two pieces, the first of which is the first `n` elements of `ls`,
+			and the second is all remaining elements.
+			e.g. split_list [1;2;3;4;5] 3 evaluates to ([1;2;3], [4;5])	 
+			Note that this function returns a tuple. Here is an example of a tuple.
+			```
+			let f x = (x, 10)
+			```
+			Assume `n` is non-negative.
+		*)
+		let split_list (ls : 'a list) (n : int) : 'a list * 'a list =
+			let rec split (one : 'a list) (two : 'a list) (i : int) : 'a list * 'a list =
+				match one with 
+				| [] -> (reverse two, [])
+				| h :: t -> if i = 0 then (reverse two, one) else split t (h :: two) (i-1)
+			in split ls [] n
+
+		(* 
 			Rotate a list to the right. That is, move index i to index i + k, and wrap the list around
 			where necessary.
 			e.g. rotate_list [1;2;3;4;5] 3 evaluates to [3;4;5;1;2]
 			`k` is non-negative with no further constraints.
 		*)
+		let rec list_length (ls : 'a list) (i : int): int = 
+				match ls with
+				| [] -> i
+				| h :: t -> list_length t (i + 1)
+			
+
 		let rotate_list (ls : 'a list) (k : int) : 'a list =
-			let rec rot (l : 'a list) (k : int) : 'a list =
-				match l with 
-				| [] -> []
-				| h :: t -> if k = 0 then l else rot (t @ [h]) (k - 1)
-			in rot ls (k - 1)
-		
+			let a, b = split_list ls (list_length ls 0 - k mod (list_length ls 0)) in b @ a
+
 	end (* module Section2 *)
 
 	include Section2
@@ -211,23 +230,6 @@ module Part1 = struct
 				| Error _ -> acc (* will never return *)
 				| Ok(max, list) -> sorter (remove_max list) (max :: acc)
 			in sorter (remove_max l) []
-		
-		(* 
-			Split a list `ls` into two pieces, the first of which is the first `n` elements of `ls`,
-			and the second is all remaining elements.
-			e.g. split_list [1;2;3;4;5] 3 evaluates to ([1;2;3], [4;5])	 
-			Note that this function returns a tuple. Here is an example of a tuple.
-			```
-			let f x = (x, 10)
-			```
-			Assume `n` is non-negative.
-		*)
-		let split_list (ls : 'a list) (n : int) : 'a list * 'a list =
-			let rec split (one : 'a list) (two : 'a list) (i : int) : 'a list * 'a list =
-				match one with 
-				| [] -> (reverse two, [])
-				| h :: t -> if i = 0 then (reverse two, one) else split t (h :: two) (i-1)
-			in split ls [] n
 
 		(* 
 			 Sort an int list using merge sort. Your solution must be O(n log n).
@@ -279,17 +281,34 @@ module Part2 = struct
 			These new implementations should not be explicitly recursive.	Note that the autograder is not aware if you cheated and used recursion; we will manually inspect your code and give you negative points if 
 			you used recursion.
 		*)
+
+		(*
+			Given a non-negative integer `n`, produce a list [n; n-1; ...; 2; 1].
+		*)
+
 		let iota1' (n: int): int list = 
-			unimplemented ()
+			match n with
+			| 0 -> []
+			| _ -> List.rev (List.init n ~f:(fun i -> i + 1))
+		
+		(*
+			Given a non-negative integer `n`, produce a list [1; 2; ...; n-1; n],	without taking O(n^2) time.
+		*)
 
 		let iota2' (n: int): int list =
-			unimplemented ()
+			match n with
+			| 0 -> []
+			| _ -> List.init n ~f:(fun i -> i + 1)
 
 		let factors' (n: int): int list =
-			unimplemented ()
+			match n with
+			| 0 -> []
+			| _ -> List.filter (iota2' n) ~f:(fun x -> (n mod x) = 0)
 
 		let split_list' (ls : 'a list) (n : int) : 'a list * 'a list =
-			unimplemented ()
+			match ls with
+			| [] -> [], []
+			| _ -> List.split_n ls n 
 
 	end (* module Section1 *)
 
@@ -303,8 +322,20 @@ module Part2 = struct
 		(* 
 			 Check if positive integer `n` is prime. This should be able to quickly handle numbers up to 2^32.
 		*)
+
 		let is_prime (n : int) : bool =
-			unimplemented ()
+			match n with
+			| 1 -> false
+			| _ -> 
+				let rec check_prime (v : int) : bool =
+					if v * v < n then 
+						if n mod v <> 0 then
+							check_prime (v + 1)
+						else
+							false
+					else
+						true
+				in check_prime 2
 
 		(* 
 			Given a positive integer `n`, return the prime factor of `n` that has the greatest multiplicity.
@@ -312,8 +343,45 @@ module Part2 = struct
 				multiplicity is 2.
 			If two prime factors have the same multiplicity, return the largest factor.
 		*)
+
+		let count_multiplicity (l : int list) : int =
+			match l with
+				| [] -> 1
+				| _ -> let rec get_multiplicity (cnt_list : (int * int) list) (cnt : int) (num : int) : int =
+					match cnt_list with
+					| [] -> num
+					| hd :: tl -> let number, count = hd in 
+						if count > cnt then
+								get_multiplicity tl count number
+						else 
+							if count = cnt then 
+								if number > num then
+									get_multiplicity tl count number
+								else 
+									get_multiplicity tl cnt num
+							else
+								get_multiplicity tl cnt num
+				in let rec count_elements (lst : int list) : (int * int) list =
+					match lst with
+						| [] -> []
+						| hd :: tl -> let cnt = List.count ~f:(fun x -> x = hd) lst in
+						(hd, cnt) :: count_elements (List.filter ~f:(fun y -> y <> hd) tl)
+				in get_multiplicity (count_elements l) 0 0
+
 		let prime_factor_with_greatest_multiplicity (n : int) : int =
-			unimplemented ()
+			let rec iter_prime (l : int list) (v : int) (m : int): int =
+				if m >= v then 
+					if is_prime v then
+						if m mod v = 0 then
+							iter_prime (v :: l) v (m / v)
+						else
+							iter_prime l (v + 1) m
+					else
+						iter_prime l (v + 1) m
+				else
+					count_multiplicity l
+			in iter_prime [] 2 n
+
 	end (* module Section2 *)
 
 	include Section2
@@ -345,20 +413,36 @@ module Part2 = struct
 			See `tower_board_example` in `tests.ml` for an example.
 
 		The first task is to determine if a list of lists of integers is "square", i.e. each list is the same length and there are the same number of lists as there are elements in any of the lists. If it is, return Ok(the dimension of the array).  If not, return Error "not square". *)
-		let square_size (grid: int list list) : (int, string) result =
-			unimplemented ()
+
+		let square_size (grid : int list list) : (int, string) result =
+			let rec check_square (grid : int list list) (len : int) =
+				match grid with
+				| [] -> Ok(len)
+				| h :: t -> 
+					if List.length h = len then
+						check_square t len
+					else
+						Error "not square"
+			in check_square (grid : int list list) (List.length grid)
 		
 		(* Given a list of integers of length n, determine if the list has exactly one occurrence
 			of each number in 1 .. n in it. Return false if not *)	
+
 		let elements_span_range (l : int list) : bool = 
-			unimplemented ()
-		
-		(* Check to see if a towers grid is well-formed, namely
-			1) it is square as per above,
-			2) it is at least 1x1 in size (no 0x0 degenerates are allowed)
-			2) each row and column spans the range as per above *)
-		let well_formed_grid (grid : int list list) : bool = 
-			unimplemented ()
+			let rec check_count (lst : (int * int) list) : bool =
+				match lst with
+				| [] -> true
+				| hd :: tl -> let i, count = hd in
+					if count > 1 then
+						false
+					else 
+						check_count tl
+			in let rec count_elements (lst : int list) : (int * int) list =
+				match lst with
+					| [] -> []
+					| hd :: tl -> let cnt = List.count ~f:(fun x -> x = hd) lst in
+					(hd, cnt) :: count_elements (List.filter ~f:(fun y -> y <> hd) tl)
+			in check_count (count_elements l)
 		
 		(* The next six auxiliary functions should only be called on well-formed grids, or rows from well-formed
 			grids, and so you don't need to deal with ill-formed cases there such as 0x0 or non-spanning grid rows.  *)	
@@ -368,34 +452,109 @@ module Part2 = struct
 		a function local_max_count to find that value.  *)
 		
 		let local_max_count (row : int list) : int =  
-			unimplemented ()
+			let rec check_local_max (l : int list) (cur_max : int) (num_max : int): int =
+				match l with
+				| [] -> num_max
+				| hd :: tl -> 
+					if hd > cur_max then
+						check_local_max tl hd (num_max + 1)
+					else
+						check_local_max tl cur_max num_max
+			in check_local_max row 0 0
 		
 		(* Now we need to apply the above function to each row/column around the grid.  There
 		are many reasonable ways to solve that task, but here we ask you to first write a
 		function verify_left_clues to check the "left side grid" clues only are correct.  For
 		this function the `edge_clues` list is only the left-side clues. *)
 		
-		let verify_left_clues (grid : int list list) (edge_clues : int list) : bool =
-			unimplemented ()
-		
+		let rec verify_left_clues (grid : int list list) (edge_clues : int list) : bool =
+			match grid, edge_clues with
+			| [], [] -> true
+			| [], _ :: _ -> false
+			| _ :: _, [] -> false
+			| hd :: tl, hd1 :: tl1 -> 
+				if (local_max_count hd) = hd1 then
+					verify_left_clues tl tl1
+				else 
+					false
+
 		(* In order to check the clues on all four edges, we will rotate the grid counter-clockwise and call the above function at each rotation. 
 		There many ways we can rotate our grid.  Here we suggest using a combination of transpose (like for a matrix: flip rows and columns), and reflect.  Note you can assume the grid is well-formed.  *)	
+
 		let transpose (grid : int list list) : int list list =
-			unimplemented ()
-			
+			let rec remove_front (g : int list list) (sz : int) : int list list = 
+				match g with
+				| [] -> []
+				| hd :: tl -> 
+					if sz > 0 then 
+						remove_front tl (sz - 1)
+					else 
+						g
+			in let rec grid_to_list (gr : int list list) (acc : int list) (sol : int list) : int list = 
+				match gr with
+				| [] -> (List.rev (List.append sol acc))
+				| [] :: tl -> grid_to_list tl [] (List.append sol acc)
+				| (x :: y) :: tl -> grid_to_list (tl @ [y]) (x :: acc) sol
+			in let rec transpose_helper (lin : int list) (gr : int list list) (size : int) : int list list =
+				match lin with 
+				| [] -> remove_front gr (List.length grid)
+				| _ -> let h, t = List.split_n lin size in
+					transpose_helper t (gr @ [h]) size
+			in transpose_helper (grid_to_list grid [] []) grid (List.length grid)
+
 		let reflect_vertical_axis (grid : int list list) : int list list =
-			unimplemented ()
+			let rec reflect (grd : int list list) (size : int) : int list list =
+				match grd with
+				| [] -> []
+				| hd :: tl -> let f, b = split_list' hd ((List.length grid) / 2) in
+					if size > 0 then
+						reflect (tl @ [((List.rev b) @ f)]) (size - 1)
+					else 
+						grd
+			in reflect grid (List.length grid)
+
+		(* Check to see if a towers grid is well-formed, namely
+			1) it is square as per above,
+			2) it is at least 1x1 in size (no 0x0 degenerates are allowed)
+			2) each row and column spans the range as per above *)
+
+		let rec check_row_span (gr : int list list) : bool = 
+			match gr with
+			| [] -> true
+			| hd :: tl -> 
+				if elements_span_range hd then
+					check_row_span tl
+				else 
+					false
+		
+		let well_formed_grid (grid : int list list) : bool = 
+			match grid with
+			| [] -> false
+			| _ -> 
+				match square_size grid with
+				| Error err -> false
+				| Ok ok -> 
+					if check_row_span grid && check_row_span (transpose grid) then
+						true
+					else 
+						false
 		
 		(* Now it should not be difficult to define a function to rotate the grid counterclockwise *)
 		let rotate_ccw (grid : int list list) : int list list = 
-			unimplemented ()
+			transpose (reflect_vertical_axis grid)
 		
 		(* Finally, write a function verify_towers_solution which given a grid and the clues all around the grid, verifies that the solution is correct with respect to the clues: the grid is well-formed as per above, and the clues are all satisfied by the solution.  
 		The clues are a list of lists, the first element of the list is the edge_clues for the original board orientation, and the subsequent lists correspond to clues for successive rotations of the grid. 
 		If either the grid is ill-formed or the clues are not all satisfied, return false.  *)
 		
-		let verify_towers_solution  (grid : int list list) (four_edge_clues : int list list) : bool = 
-			unimplemented ()
+		let rec verify_towers_solution  (grid : int list list) (four_edge_clues : int list list) : bool = 
+			match four_edge_clues with 
+			| [] -> true
+			| hd :: tl ->
+				if well_formed_grid grid && (verify_left_clues grid hd) then
+					verify_towers_solution (rotate_ccw grid) tl
+				else
+					false
 		
 	end (* module Section3 *)
 

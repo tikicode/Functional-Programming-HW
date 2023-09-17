@@ -81,12 +81,37 @@ let part1_section3_tests =
       
 
 (* Part II Section 1: we leave this section to you *)
-let part2_section1_tests = "Part 2 Section 1" >: test_list []
+let test_iota1' _ =
+  assert_equal (iota1' 0) [];
+  assert_equal (iota1' 3) [3;2;1]
+
+let test_iota2' _ =
+  assert_equal (iota2' 0) [];
+  assert_equal (iota2' 3) [1;2;3]
+
+let test_factors' _ =
+  assert_equal (factors' 0) [];
+  assert_equal (factors' 12) [ 1; 2; 3; 4; 6; 12 ]
+
+let test_split_list' _ =
+  assert_equal (split_list' [] 12) ([],[]);
+  assert_equal (split_list' [1;2;3;4;5] 3) ([1;2;3], [4;5]);
+  assert_equal (split_list' [1;2;3;4;5] 5) ([1;2;3;4;5], [])
+
+let part2_section1_tests = 
+  "Part 2 Section 1" >::: [
+    "Iota1'" >:: test_iota1';
+    "Iota2'" >:: test_iota2';
+    "Test Factors'" >:: test_factors';
+    "Test Split List'" >:: test_split_list';
+]
 
 (* Part II Section 2: primes *)
 let test_is_prime _ =
   assert_equal (is_prime 2) true;
-  assert_equal (is_prime 3) true
+  assert_equal (is_prime 3) true;
+  assert_equal (is_prime 17) true;
+  assert_equal (is_prime 1) false
 
 let test_is_prime_large _ = assert_equal (is_prime (Core.Int.pow 2 31 - 1)) true
 
@@ -94,7 +119,8 @@ let test_prime_factor_with_greatest_multiplicity _ =
   assert_equal (prime_factor_with_greatest_multiplicity 4) 2;
   assert_equal (prime_factor_with_greatest_multiplicity 120) 2;
   assert_equal (prime_factor_with_greatest_multiplicity 5) 5;
-  assert_equal (prime_factor_with_greatest_multiplicity 252) 3
+  assert_equal (prime_factor_with_greatest_multiplicity 252) 3;
+  assert_equal (prime_factor_with_greatest_multiplicity 1) 1
 
 let part2_section2_tests =
   "Part 2 Section 2" >::: [
@@ -198,6 +224,8 @@ let part2_section3_tests =
     "Well_formed_grid" >:: test_well_formed_grid;
     "Local max count" >:: test_local_max_count;
     "Verify left clues" >:: test_verify_left_clues;
+    "Test transpose" >:: test_transpose;
+    "Test reflect" >:: test_reflect_vertical_axis;
     "Rotate" >:: test_rotate_ccw;
     "Verify towers solution" >:: test_verify_towers_solution;
   ]
@@ -209,9 +237,9 @@ let series =
     part1_section3_tests;
     (* Keep these part 2 tests commented out while working on and submitting part 1. 
       Uncomment part 2 tests when working on and submitting part 2. *)
-    (* part2_section1_tests;
+    part2_section1_tests;
     part2_section2_tests;
-    part2_section3_tests; *)
+    part2_section3_tests;
   ]
 
 (* The following line runs all the tests put together into `series` above *)
