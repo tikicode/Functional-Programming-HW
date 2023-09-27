@@ -10,7 +10,7 @@
     ------------
     GENERAL FLOW
     ------------
-    
+
     Given a directory path on the command line (or the current directory if none is given), you should:
 
     - traverse the directory recursively to find each OCaml source file (.ml or .mli)
@@ -35,14 +35,14 @@
     (* 
        remove this text in case there is a match with a keyword here by mistake
     *)
-    
+
     and 
-    
+
     "remove this text too in case there is a match with a keyword in this literal string"
 
     Once comments/literals are removed, you need to count each occurence of a keyword in the file which is delimited on both ends by non-characters. So for example `fun iffy -> 0` does not contain the keyword `if` since it is not delimited on both ends by non-characters, but `if x > 0` does.
 
-    
+
     ------
     OUTPUT
     ------
@@ -60,7 +60,7 @@
     --------------
     CLARIFICATIONS
     --------------
-    
+
     Here are some clarifications you might find useful. Before asking for clarification on Courselore, please read all of the items below.
     - Nested comments are supported in OCaml, so be sure to keep track of nesting.
     - Comments can span multiple lines like this one we're in right now.
@@ -78,7 +78,7 @@
     - Your code will only be tested on compiling OCaml files.
     - Report keywords in order of occurrence. If multiple keywords have the same count, then report those keywords in alphabetical order.
     - Your output must be terminated by a newline to pass the Gradescope tests.
-      
+
 
     ---------
     LIBRARIES
@@ -90,9 +90,9 @@
     You are of course welcome to use your Part I dict functions.
 
     We highly suggest using a pre-processor extension for s-expression conversions. `ppx_jane` helps you derive s-expression conversions with `[@@deriving sexp]`. See it here: https://github.com/janestreet/ppx_sexp_conv
-    
+
     Note that if you are using `ppx_jane` to derive sexp conversions, you'll need to add
-      
+
     (preprocess
     (pps ppx_jane))
 
@@ -137,11 +137,11 @@ open Core
 (* ["and"; "as"; "assert"; "asr"; "begin"; "class"; "constraint"; "do"; "done"; "downto"; "else"; "end"; "exception"; "external"; "false"; "for"; "fun"; "function"; "functor"; "if"; "in"; "include"; "inherit"; "initializer"; "land"; "lazy"; "let"; "lor"; "lsl"; "lsr"; "lxor"; "match"; "method"; "mod"; "module"; "mutable"; "new"; "nonrec"; "object"; "of"; "open"; "or"; "private"; "rec"; "sig"; "struct"; "then"; "to"; "true"; "try"; "type"; "val"; "virtual"; "when"; "while"; "with";]
 *)
 
-(* 
-  As with C, the first argv is always the name of the executable, that's why we match on the second element in the list instead 
+(*
+   As with C, the first argv is always the name of the executable, that's why we match on the second element in the list instead
 *)
 let () =
-  let target_dir = 
+  let target_dir =
     match Sys.get_argv () |> Array.to_list with
     | _ :: dir :: _ -> dir
     | _ -> Core_unix.getcwd ()

@@ -1,81 +1,74 @@
-(* 
+(*
 
-Part I: A Binary Tree Based Dictionary
+   Part I: A Binary Tree Based Dictionary
 
-This file specifies the interface for your code and must not be edited (it will also not be included in your zip submission). 
-Your actual implementation should go in the file `simpledict.ml`  which satisfies this interface appropriately.
+   This file specifies the interface for your code and must not be edited (it will also not be included in your zip submission).
+   Your actual implementation should go in the file `simpledict.ml`  which satisfies this interface appropriately.
 
-Mutation operations of OCaml are not allowed or required.
-
+   Mutation operations of OCaml are not allowed or required.
 *)
 
 module Tree : sig
-  type 'a t =
-    | Leaf
-    | Branch of
-        { item:  'a
-        ; left:  'a t
-        ; right: 'a t }
+  type 'a t = Leaf | Branch of { item : 'a; left : 'a t; right : 'a t }
 
-    (*
+  (*
         Return the number of branch items in the tree. Leaf nodes do not count towards size.   
     *)
-    val size : 'a t -> int
+  val size : 'a t -> int
 
-    (* 
-       Return the depth of the deepest non-Leaf node. The depth of the root node is zero.
+  (*
+      Return the depth of the deepest non-Leaf node. The depth of the root node is zero.
 
-       If a tree is *only* a Leaf, then say it has height -1 because a Leaf is not a "real node".
-    *)
-    val height : 'a t -> int
+      If a tree is *only* a Leaf, then say it has height -1 because a Leaf is not a "real node".
+  *)
+  val height : 'a t -> int
 
-    (*
+  (*
         Decide if a tree is balanced. A tree is balanced if for every branch in the tree, the height
         of the left and right subtrees does not differ by more than 1.
 
         It comes in handy here to say a Leaf has height -1.
     *)
-    val is_balanced : 'a t -> bool
+  val is_balanced : 'a t -> bool
 
-    (*
+  (*
         Given a dict, flatten it into a list of items which retains the tree's ordering (the 'inorder' traversal). This should take O(n) time; recall that each (::) is O(1) and each (@) is O(n).
     *)
-    val to_list : 'a t -> 'a list
+  val to_list : 'a t -> 'a list
 
-    (*
+  (*
         Check whether a tree is *ordered*, i.e. that for every branch in the tree, all left subtree items are strictly less than the branch item, and all right subtree items are strictly greater.
 
         Note that this requirement guarantees (by induction) that the tree has no duplicate items.
     *)
-    val is_ordered : 'a t -> compare:('a -> 'a -> int) -> bool
-
-end (* module Tree *)
+  val is_ordered : 'a t -> compare:('a -> 'a -> int) -> bool
+end
+(* module Tree *)
 
 module Dict_item : sig
-    (*
+  (*
         The Dict_item module describes a type so that a Tree can represent a dictionary. 
         The type holds a key and a value.
     *)
 
-    (* 
-        For simplicity, we will restrict the keys to be `string`s only; the values are type 'a.   
-    *)
-    type 'a t = { key: string ; value: 'a }
+  (*
+       For simplicity, we will restrict the keys to be `string`s only; the values are type 'a.
+  *)
+  type 'a t = { key : string; value : 'a }
 
-    (*
+  (*
         Our `compare` will only compare the keys. Values are ignored. This is implemented for you.
     *)
-    val compare : 'a t -> 'a t -> int
+  val compare : 'a t -> 'a t -> int
+end
+(* module Dict_item *)
 
-end (* module Dict_item *)
+(*
+     The dict type will be a tree of Dict_item.t.
 
+     Note that because this type is a tree, all Tree module functions will work on it.
 
-(* 
-    The dict type will be a tree of Dict_item.t.
-
-    Note that because this type is a tree, all Tree module functions will work on it.
-
-    You may ignore the `[@@deriving show]`. You will not need to work with it, and it is to pretty-print your autograder results.
+     You may ignore the `[@@deriving show]`. You will not need to work with it, and it is to pretty-print your autograder results.
 *)
 type 'a t = 'a Dict_item.t Tree.t [@@deriving show]
 
@@ -98,7 +91,7 @@ val size : 'a t -> int
 val to_list : 'a t -> (string * 'a) list
 
 (*
-    Given a string and a dictionary, look up the associated value, if any. Your implementation must be O(log n) on average since you can take advanatge of the is_ordered requirement.
+    Given a string and a dictionary, look up the associated value, if any. Your implementation must be O(log n) on average since you can take advantage of the is_ordered requirement.
 *)
 val lookup : 'a t -> key:string -> 'a option
 
