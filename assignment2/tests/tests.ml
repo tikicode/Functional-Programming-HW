@@ -2,6 +2,7 @@ open Core
 open OUnit2
 module D = Simpledict
 module T = D.Tree
+module U = Utils
 
 open D.Dict_item
  
@@ -95,7 +96,8 @@ let test_insert _ =
 
 let test_of_list _ = 
   assert_equal T.Leaf @@ D.of_list [];
-  assert_equal d1 @@ D.of_list [("d", 0); ("a", 1); ("e", 2)]
+  assert_equal d1 @@ D.of_list [("d", 0); ("a", 1); ("e", 2)];
+  assert_equal m1 @@ D.of_list [("d", 0); ("a", 0); ("a", 1)]
 
 let test_of_list_multi _ = 
   assert_equal T.Leaf @@ D.of_list_multi [];
@@ -166,10 +168,83 @@ let dict_tests = "dict tests" >: test_list [
     "D.merge_with"    >:: test_merge_with;
   ]
 
+(* let cur_dir_ocaml_files = 
+["./tests/tests.ml"; "./_build/default/tests/tests.ml";
+   "./_build/default/tests/tests.mli"; "./_build/default/src/utils.ml";
+   "./_build/default/src/simpledict.pp.ml";
+   "./_build/default/src/keywordcount.mli";
+   "./_build/default/src/keywordcount.ml";
+   "./_build/default/src/simpledict.mli"; "./_build/default/src/simpledict.ml";
+   "./_build/default/src/simpledict.pp.mli"; "./_build/default/src/utils.mli";
+   "./src/utils.ml"; "./src/keywordcount.ml"; "./src/simpledict.mli";
+   "./src/simpledict.ml"; "./src/utils.mli"] *)
+
+
+(* let test_traverse_directory _ = 
+  assert_equal ["./tests.ml"] @@ (U.traverse_directory ".") *)
+  (* assert_equal cur_dir_ocaml_files @@ (U.traverse_directory "./tests/tests.ml");
+  assert_equal cur_dir_ocaml_files @@ (U.traverse_directory "./boof") *)
+
+let boof = "" (* test keyword *)
+
+let test_filter_strings _ =
+  assert_equal boof @@ U.filter_strings "";
+  assert_equal "abcdef" @@ U.filter_strings "abc\"abc\"def";
+  assert_equal "abcdef" @@ U.filter_strings "abc\" abc \"def";
+  assert_equal "abc\ndef" @@ U.filter_strings "abc\" abc \"\ndef";
+  assert_equal "abcdef" @@ U.filter_strings "abc\" abc \"def\" abc \""
+
+let test_filter_comments _ = 
+  assert_equal boof @@ U.filter_comments "";
+  assert_equal "abcdef" @@ U.filter_comments "abc(* comment *)def";
+  assert_equal "abcdef" @@ U.filter_comments "abc(* comment (* nest *) *)def";
+  assert_equal "abcdef" @@ U.filter_comments "abc(* comment1 *)def(* comment2 *)";
+  assert_equal "let (+*) = (+)" @@ U.filter_comments "let (+*) = (+)";
+  assert_equal "let (+*) = (+) let (+*) = (+)" @@ U.filter_comments "let (+*) = (+)(* comment1 *)(* comment2 *) let (+*) = (+)"
+
+let test_filter_non_characters _ = 
+  assert_equal boof @@ U.filter_non_characters "";
+  assert_equal " if x_i   0 then true else false " @@ U.filter_non_characters "(if x_i = 0 then true else false)"
+
+let kw1 = T.(Branch{item ={key = "boof"; value = 4} ; left = T.Leaf; right = T.Leaf})
+
+let test_count_kw_occurance _ =
+  assert_equal kw1 @@ U.count_kw_occurance ~kw_list:["boof"] ~path:"./tests.ml"
+
+let kw2 = T.(Branch{item ={key = "test2"; value = 1} ; 
+left = T.Branch({item={key = "test1"; value = 2};left=T.Leaf; right=T.Leaf}); 
+right = T.Branch({item={key = "test3"; value = 0};left=T.Leaf; right=T.Leaf})})
+
+let kw3 = T.(Branch{item ={key = "test2"; value = 2} ; 
+left = T.Branch({item={key = "test1"; value = 2};left=T.Leaf; right=T.Leaf}); 
+right = T.Branch({item={key = "test3"; value = 1};left=T.Leaf; right=T.Leaf})})
+  
+let test_sort_kw_list_by_value _ = 
+  assert_equal [] @@ U.sort_kw_list_by_value T.Leaf;
+  assert_equal [("test1", 2); ("test2", 1)] @@ U.sort_kw_list_by_value kw2;
+  assert_equal [("test1", 2); ("test2", 2); ("test3", 1)] @@ U.sort_kw_list_by_value kw3
+
+  
+let test_list_to_sexp _ = 
+  assert_equal "()" @@ U.list_to_sexp [];
+  assert_equal "(((keyword let)(count 5)))" @@ U.list_to_sexp [("let", 5)];
+  assert_equal "(((keyword let)(count 5))((keyword and)(count 1)))" @@ U.list_to_sexp [("let", 5) ; ("and", 1)]
+
+let utils_tests = "utils tests" >: test_list [
+  (* "U.traverse_directory" >:: test_traverse_directory; *)
+  "U.filter_strings" >:: test_filter_strings;
+  "U.filter_comments" >:: test_filter_comments;
+  "U.filter_non_characters" >:: test_filter_non_characters;
+  "U.count_kw_occurance" >:: test_count_kw_occurance;
+  "U.sort_kw_list_by_value" >:: test_sort_kw_list_by_value;
+  "U.list_to_sexp" >:: test_list_to_sexp;
+]
+
   (* Add another suite for any of your part II functions needing testing as well.  Make sure to put those functions in utils.ml and headers in utils.mli as only libraries are unit tested; keywordcount.ml is an executable not a library. *)
 let series = "Assignment2 Tests" >::: [
     tree_tests;
     dict_tests;
+    utils_tests;
   ]
 
 let () = 

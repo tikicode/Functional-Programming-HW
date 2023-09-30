@@ -140,11 +140,92 @@ open Core
 (*
    As with C, the first argv is always the name of the executable, that's why we match on the second element in the list instead
 *)
+
+let kw_list =
+  [
+    "and";
+    "as";
+    "assert";
+    "asr";
+    "begin";
+    "class";
+    "constraint";
+    "do";
+    "done";
+    "downto";
+    "else";
+    "end";
+    "exception";
+    "external";
+    "false";
+    "for";
+    "fun";
+    "function";
+    "functor";
+    "if";
+    "in";
+    "include";
+    "inherit";
+    "initializer";
+    "land";
+    "lazy";
+    "let";
+    "lor";
+    "lsl";
+    "lsr";
+    "lxor";
+    "match";
+    "method";
+    "mod";
+    "module";
+    "mutable";
+    "new";
+    "nonrec";
+    "object";
+    "of";
+    "open";
+    "or";
+    "private";
+    "rec";
+    "sig";
+    "struct";
+    "then";
+    "to";
+    "true";
+    "try";
+    "type";
+    "val";
+    "virtual";
+    "when";
+    "while";
+    "with";
+  ]
+
 let () =
   let target_dir =
     match Sys.get_argv () |> Array.to_list with
     | _ :: dir :: _ -> dir
     | _ -> Core_unix.getcwd ()
   in
-  (* your code here instead of the following line *)
-  Stdio.printf "Target dir: %s\n" target_dir
+  let merge_counts (x : int option) (y : int option) : int =
+    match x, y with 
+    | None, None -> 0
+    | None , Some y -> y
+    | Some x, None -> x
+    | Some x, Some y -> x + y
+  in
+  let count_kws_and_merge (paths : string list) : int Simpledict.t =
+    let rec count_helper (acc : int Simpledict.t) (paths_left : string list) : int Simpledict.t =
+      match paths_left with
+      | [] -> acc
+      | path :: tl -> 
+        count_helper (Simpledict.merge_with acc (Utils.count_kw_occurance ~kw_list ~path) ~merger:merge_counts) tl
+    in
+    count_helper Simpledict.Tree.Leaf paths
+  in
+  target_dir 
+  |> Utils.traverse_directory
+  |> count_kws_and_merge
+  |> Utils.sort_kw_list_by_value 
+  |> Utils.list_to_sexp
+  |> Stdio.printf "%s\n"

@@ -141,9 +141,7 @@ let of_list (list : (string * 'a) list) : 'a t =
   let rec insert_kv (dict : 'a t) (l : (string * 'a) list) : 'a t =
     match l with
     | [] -> dict
-    | hd :: tl ->
-        let key, value = hd in
-        insert_kv (insert dict ~key ~value) tl
+    | (key, value) :: tl -> insert_kv (insert dict ~key ~value) tl
   in
   insert_kv Leaf list
 

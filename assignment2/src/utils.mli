@@ -9,4 +9,18 @@ Feel free to remove `placeholder` when you add your actual functions.
    
 *)
 
-val placeholder : unit -> unit
+val traverse_directory : string -> string list
+
+val read_file_as_string : string -> string 
+
+val filter_strings : string -> string
+
+val filter_comments : string -> string
+
+val filter_non_characters : string-> string
+
+val count_kw_occurance : kw_list:string list -> path:string -> int Simpledict.t
+
+val sort_kw_list_by_value : int Simpledict.t -> (string * int) list
+
+val list_to_sexp : (string * int) list -> string

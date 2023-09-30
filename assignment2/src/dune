@@ -3,12 +3,14 @@
  (modules simpledict)
  (libraries core)
  (preprocess
-  (pps ppx_deriving.show)))
+  (pps ppx_deriving.show ppx_jane)))
 
 (library
  (name utils)
  (modules utils)
- (libraries core))
+ (libraries core simpledict)
+ (preprocess
+  (pps ppx_jane)))
 
 (executable
  (name keywordcount)
