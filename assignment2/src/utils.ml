@@ -28,6 +28,7 @@ let traverse_directory (path : string) : string list =
     in
     ocaml_files @ sub_dir_files
   in
+  (* traverse the current directory if the input path is not valid *)
   try
     match Sys.is_directory path with
     | true -> traverse_helper path
@@ -57,8 +58,12 @@ let filter_comments (contents : string) : string =
     match chars with
     | [] -> List.rev acc
     | '(' :: '*' :: tl -> filter_helper tl acc (depth + 1) true
+    (* If the depth exceeds 0, mark that an open comment still exists
+       so another closing comment can be captured *)
     | '*' :: ')' :: tl when open_seen = true ->
         filter_helper tl acc (depth - 1) (if depth > 0 then true else false)
+    (* If a closing comment was seen without an open comment, the
+       disregard it *)
     | '*' :: ')' :: tl when open_seen = false ->
         filter_helper tl (')' :: '*' :: acc) depth false
     | _ :: tl when depth != 0 && open_seen = true ->
@@ -80,6 +85,7 @@ let filter_non_characters (contents : string) : string =
   in
   String.map replace_non_characters contents
 
+(* Helper function to clear the file of strings, comments, and non-chars *)
 let clean_file (path : string) : string =
   filter_non_characters
     (filter_comments (filter_strings (read_file_as_string path)))
@@ -103,6 +109,8 @@ let sort_kw_list_by_value (kw_counts : int Simpledict.t) : (string * int) list =
   |> List.filter (fun (_, value) -> value > 0)
   |> List.stable_sort (fun (_, val1) (_, val2) -> compare val2 val1)
 
+(* New type for sexp since the output is in the form
+   (keyword)(count) instead of (key)(value) *)
 type z = { keyword : string; count : int } [@@deriving sexp]
 
 let list_to_sexp (kw_counts : (string * int) list) : string =
@@ -110,7 +118,3 @@ let list_to_sexp (kw_counts : (string * int) list) : string =
   |> List.map (fun (key, value) ->
          { keyword = key; count = value } |> sexp_of_z)
   |> Sexplib.Sexp.List |> Sexplib.Sexp.to_string
-
-(* let keyword_counts_to_sexp counts = ()
-
-   let print_endline line = () *)

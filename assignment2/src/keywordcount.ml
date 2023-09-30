@@ -207,6 +207,7 @@ let () =
     | _ :: dir :: _ -> dir
     | _ -> Core_unix.getcwd ()
   in
+  (* Function to define how merges should be completed when Simpledict.merge_with *)
   let merge_counts (x : int option) (y : int option) : int =
     match (x, y) with
     | None, None -> 0
@@ -214,6 +215,9 @@ let () =
     | Some x, None -> x
     | Some x, Some y -> x + y
   in
+  (* Produce a dictionary of keyword counts for each OCaml file in the input path list
+     and merge them to return a dict of keyword counts across all OCaml files in the
+     directory *)
   let count_kws_and_merge (paths : string list) : int Simpledict.t =
     let rec count_helper (acc : int Simpledict.t) (paths_left : string list) :
         int Simpledict.t =
