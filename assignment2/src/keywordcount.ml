@@ -208,24 +208,25 @@ let () =
     | _ -> Core_unix.getcwd ()
   in
   let merge_counts (x : int option) (y : int option) : int =
-    match x, y with 
+    match (x, y) with
     | None, None -> 0
-    | None , Some y -> y
+    | None, Some y -> y
     | Some x, None -> x
     | Some x, Some y -> x + y
   in
   let count_kws_and_merge (paths : string list) : int Simpledict.t =
-    let rec count_helper (acc : int Simpledict.t) (paths_left : string list) : int Simpledict.t =
+    let rec count_helper (acc : int Simpledict.t) (paths_left : string list) :
+        int Simpledict.t =
       match paths_left with
       | [] -> acc
-      | path :: tl -> 
-        count_helper (Simpledict.merge_with acc (Utils.count_kw_occurance ~kw_list ~path) ~merger:merge_counts) tl
+      | path :: tl ->
+          count_helper
+            (Simpledict.merge_with acc
+               (Utils.count_kw_occurance ~kw_list ~path)
+               ~merger:merge_counts)
+            tl
     in
     count_helper Simpledict.Tree.Leaf paths
   in
-  target_dir 
-  |> Utils.traverse_directory
-  |> count_kws_and_merge
-  |> Utils.sort_kw_list_by_value 
-  |> Utils.list_to_sexp
-  |> Stdio.printf "%s\n"
+  target_dir |> Utils.traverse_directory |> count_kws_and_merge
+  |> Utils.sort_kw_list_by_value |> Utils.list_to_sexp |> Stdio.printf "%s\n"

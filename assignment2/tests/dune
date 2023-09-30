@@ -1,8 +1,3 @@
 (test
-  (name tests)
-  (libraries
-    core
-    ounit2
-    simpledict
-    utils
-  ))
+ (name tests)
+ (libraries core ounit2 simpledict utils))
