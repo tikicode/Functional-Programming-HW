@@ -23,6 +23,7 @@ open Core
 open OUnit2
 open Finite_group
 open Ring
+open Postfix_calc
 
 
 module Test_fg = Make(
@@ -115,6 +116,213 @@ let ring_tests =
     "Ring.( * )" >:: test_ring_multiply;
   ]
 
+let rat_of_string (str: string) : string =
+  match Rat_data.of_string str with
+  | Some v -> Rat_data.to_string v
+  | None -> "0/0"
 
-let series = "Assignment3 Tests" >::: [finite_group_tests; ring_tests]
+let test_rat_of_string _ =
+  assert_equal "1/2" @@ rat_of_string "1/2";
+  assert_equal "-1/2" @@ rat_of_string "-1/2";
+  assert_equal "1/2" @@ rat_of_string "2/4";
+
+  assert_equal None @@ Rat_data.of_string "1/-2";
+  assert_equal None @@ Rat_data.of_string "-1/-2";
+  assert_equal None @@ Rat_data.of_string "1/2/";
+  assert_equal None @@ Rat_data.of_string "/1/2/";
+  assert_equal None @@ Rat_data.of_string "/1/2/3";
+  assert_equal None @@ Rat_data.of_string "1/2a"
+
+let z4_next (str : string) : string * string = 
+  match Z4_data.next str with
+  | Some (s, v) -> (s, Z4_data.to_string v)
+  | None -> ("", "")
+let test_z4_next _= 
+  assert_equal ("", "0") @@ z4_next "0";
+  assert_equal ("@", "1") @@ z4_next "1@";
+  assert_equal ("+", "1") @@ z4_next "1+";
+  assert_equal (" 2", "1") @@ z4_next "1 2";
+
+  assert_equal None @@ Z4_data.next "";
+  assert_equal None @@ Z4_data.next "+";
+  assert_equal None @@ Z4_data.next "*";
+  assert_equal None @@ Z4_data.next "@123";
+  assert_equal None @@ Z4_data.next "-1";
+  assert_equal None @@ Z4_data.next "7"
+
+let int_next (str : string) : string * string = 
+  match Int_data.next str with
+  | Some (s, v) -> (s, Int_data.to_string v)
+  | None -> ("", "")
+
+let test_int_next _ = 
+  assert_equal ("", "0") @@ int_next "0";
+  assert_equal ("@", "1") @@ int_next "1@";
+  assert_equal ("+", "1") @@ int_next "1+";
+  assert_equal (" 234", "1234") @@ int_next "1234 234";
+  assert_equal ("-", "-1") @@ int_next "-1-";
+
+  assert_equal None @@ Int_data.next "";
+  assert_equal None @@ Int_data.next "+";
+  assert_equal None @@ Int_data.next "*";
+  assert_equal None @@ Int_data.next "@123";
+  assert_equal None @@ Int_data.next "--2"
+
+let rat_next (str : string) : string * string = 
+  match Rat_data.next str with
+  | Some (s, v) -> (s, Rat_data.to_string v)
+  | None -> ("", "")
+
+let test_rat_next _ = 
+  assert_equal ("", "0/1") @@ rat_next "0/1";
+  assert_equal ("@", "1/2") @@ rat_next "1/2@";
+  assert_equal ("+", "1/1") @@ rat_next "1/1+";
+  assert_equal (" 123123", "-1/2") @@ rat_next "-1/2 123123";
+  assert_equal ("-", "-1/1") @@ rat_next "-1/1-";
+
+  assert_equal None @@ Rat_data.next "";
+  assert_equal None @@ Rat_data.next "+";
+  assert_equal None @@ Rat_data.next "*";
+  assert_equal None @@ Rat_data.next "@123";
+  assert_equal None @@ Rat_data.next "/-2";
+  assert_equal None @@ Rat_data.next "-x/-2"
+
+let z4_eval (str : string) : string = 
+  match Z4_eval.eval str with
+  | Ok v -> Z4_data.to_string v
+  | Error msg -> msg
+
+let test_z4_eval _ = 
+  assert_equal "2" @@ z4_eval "1 1 +";
+  assert_equal "3" @@ z4_eval "1 3 3 ++";
+  assert_equal "0" @@ z4_eval "2 2 *";
+  assert_equal "0" @@ z4_eval "2 2 1 * +";
+  assert_equal "2" @@ z4_eval "11+";
+  assert_equal "0" @@ z4_eval "2\r\t 2 +\n";
+
+  assert_equal "unmatched" @@ z4_eval "";
+  assert_equal "unmatched" @@ z4_eval "1 1";
+  assert_equal "unmatched" @@ z4_eval "1 * +";
+  assert_equal "unmatched" @@ z4_eval "1 +";
+  assert_equal "illegal character" @@ z4_eval "1 1 + @";
+  assert_equal "illegal character" @@ z4_eval "1 4 7 ++"
+
+let int_eval (str : string) : string = 
+  match Int_eval.eval str with
+  | Ok v -> Int_data.to_string v
+  | Error msg -> msg
+
+let test_int_eval _ = 
+  assert_equal "2" @@ int_eval "1 1 +";
+  assert_equal "12" @@ int_eval "1 4 7++";
+  assert_equal "4" @@ int_eval "2 2 *";
+  assert_equal "16" @@ int_eval "2 2 7 * +";
+  assert_equal "-1" @@ int_eval "11-12+";
+  assert_equal "4" @@ int_eval "2\r\t 2 +\n";
+
+  assert_equal "unmatched" @@ int_eval "";
+  assert_equal "unmatched" @@ int_eval "1 1";
+  assert_equal "unmatched" @@ int_eval "1 * +";
+  assert_equal "unmatched" @@ int_eval "1 +";
+  assert_equal "illegal character" @@ int_eval "1 1 + @";
+  assert_equal "illegal character" @@ int_eval "1/2"
+
+let rat_eval (str : string) : string = 
+  match Rat_eval.eval str with
+  | Ok v -> Rat_data.to_string v
+  | Error msg -> msg
+let test_rat_eval _ = 
+  assert_equal "1/1" @@ rat_eval "1/2 1/2 +";
+  assert_equal "17/3" @@ rat_eval "1/1 4/1 2/3 ++";
+  assert_equal "5/6" @@ rat_eval "1/2 1/3 +";
+  assert_equal "1/1" @@ rat_eval "1/2 2/1 *";
+  assert_equal "19/4" @@ rat_eval "3/2 2/1 7/6 + *";
+  assert_equal "2/3" @@ rat_eval "2/6 1/3 +";
+  assert_equal "4/1" @@ rat_eval "2/1 \r\t 2/1 +\n";
+
+  assert_equal "unmatched" @@ rat_eval "";
+  assert_equal "unmatched" @@ rat_eval "1/3 1/2";
+  assert_equal "unmatched" @@ rat_eval "1/4 * +";
+  assert_equal "unmatched" @@ rat_eval "1/4 *";
+  assert_equal "illegal character" @@ rat_eval "1/2 1/1 + @";
+  assert_equal "illegal character" @@ rat_eval "1/0 1/1 +";
+  assert_equal "illegal character" @@ rat_eval "-1/-3 1/1 + @";
+  assert_equal "illegal character" @@ rat_eval "1/-3 1/1 + @";
+  assert_equal "illegal character" @@ rat_eval "1/3/2 1/1 + @"
+
+let postfix_calc_tests = 
+  "Postfix_calc tests"
+  >::: [
+    "Postfix_calc.Rat_data.of_string" >:: test_rat_of_string;
+    "Postfix_calc.Z4_data.next" >:: test_z4_next;
+    "Postfix_calc.Int_data.next" >:: test_int_next;
+    "Postfix_calc.Rat_data.next" >:: test_rat_next;
+    "Postfix_calc.Z4_eval.eval" >:: test_z4_eval;
+    "Postfix_calc.Int_eval.eval" >:: test_int_eval;
+    "Postfix_calc.Rat_eval.eval" >:: test_rat_eval;
+  ]
+
+(* Postcondition: Rationals are simplified *)
+let test_rationals_simplified _ =
+  assert_equal ("", "1/2") @@ rat_next "2/4";
+  assert_equal ("", "1/2") @@ rat_next "234234/468468";
+  assert_equal ("", "-1/2") @@ rat_next "-2/4";
+  assert_equal ("", "-1/2") @@ rat_next "-234234/468468";
+  assert_equal ("", "-1/3") @@ rat_next "-3/9";
+  assert_equal ("", "12/29") @@ rat_next "12/29"
+
+(* Postcondition: Next only reads a 't' off of a string *)
+let test_maximal_munch _ =
+  assert_equal ("034", "1") @@ z4_next "1034";
+  assert_equal ("abcd", "1034") @@ int_next "1034abcd";
+  assert_equal (" \n\r\tabcd", "1034") @@ int_next "1034 \n\r\tabcd";
+  assert_equal ("/4+", "1/3") @@ rat_next "1/3/4+"
+
+(* Precondition: Negative rationals must only have the  '-' in the numerator *)
+let test_negative_rational_precondition _ =
+  assert_equal ("", "-1/3") @@ rat_next "-1/3";
+  assert_equal None @@ Rat_data.next "-1/-3";
+  assert_equal None @@ Rat_data.next "1/-3"
+
+(* Precondition: Correct number of operators *)
+let test_input_operator_match _ = 
+  assert_equal "1/2" @@ rat_eval "1/4 1/4 +";
+  assert_equal "unmatched" @@ rat_eval "1/2 1/2";
+  assert_equal "unmatched" @@ rat_eval "1/2 +";
+  assert_equal "unmatched" @@ rat_eval "1/2 1/2 + +";
+  assert_equal "unmatched" @@ rat_eval "1/2 + +";
+  assert_equal "unmatched" @@ rat_eval "";
+
+  assert_equal "2" @@ int_eval "1 1 +";
+  assert_equal "unmatched" @@ int_eval "1 1";
+  assert_equal "unmatched" @@ int_eval "1 +";
+  assert_equal "unmatched" @@ int_eval "1 1 + +";
+  assert_equal "unmatched" @@ int_eval "1 + +";
+  assert_equal "unmatched" @@ int_eval "";
+
+  assert_equal "2" @@ z4_eval "1 1 +";
+  assert_equal "unmatched" @@ z4_eval "1 1";
+  assert_equal "unmatched" @@ z4_eval "1 +";
+  assert_equal "unmatched" @@ z4_eval "1 1 + +";
+  assert_equal "unmatched" @@ z4_eval "1 + +";
+  assert_equal "unmatched" @@ z4_eval ""
+
+(* Precondition: Check illegal characters *)
+let test_illegal_characters _ =
+  assert_equal "illegal character" @@ rat_eval "1/2 2/3 + %*&";
+  assert_equal "illegal character" @@ rat_eval "1/0 2/3 + %*&";
+  assert_equal "illegal character" @@ int_eval "1 2 + %*&";
+  assert_equal "illegal character" @@ z4_eval "1 2 + %*&"
+
+let specifications = 
+  "Assignment3 specifications"
+  >::: [
+    "Spec: Rationals simplified" >:: test_rationals_simplified;
+    "Spec: Maximal munch satisfied" >:: test_maximal_munch;
+    "Spec: Negative rational precondition" >:: test_negative_rational_precondition;
+    "Spec: Input operator match" >:: test_input_operator_match;
+    "Spec: Illegal character" >:: test_illegal_characters;
+  ]
+
+let series = "Assignment3 Tests" >::: [finite_group_tests; ring_tests; postfix_calc_tests; specifications]
 let () = run_test_tt_main series

@@ -3,14 +3,18 @@
  (modules finite_group)
  (libraries core)
  (preprocess
-  (pps ppx_jane)))
+  (pps ppx_jane bisect_ppx)))
 
 (library
  (name ring)
  (modules ring)
- (libraries core))
+ (libraries core)
+ (preprocess
+  (pps bisect_ppx)))
 
 (library
  (name postfix_calc)
  (modules postfix_calc)
- (libraries core ring))
+ (libraries core ring)
+ (preprocess
+  (pps bisect_ppx)))

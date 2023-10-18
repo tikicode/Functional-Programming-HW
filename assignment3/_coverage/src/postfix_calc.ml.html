@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>postfix_calc.ml &mdash; Coverage report</title>
+    <meta name="description" content="100.00% coverage in src/postfix_calc.ml">
+    <link rel="stylesheet" href="../coverage.css"/>
+    <script src="../highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </head>
+  <body>
+    <div id="header">
+      <h1>
+        <a href="../index.html">
+          <span class="dirname">src/</span>postfix_calc.ml
+        </a>
+      </h1>
+      <h2>100.00%</h2>
+    </div>
+    <div id="navbar">
+    </div>
+    <div id="report">
+      <div id="lines-layer">
+        <pre>
+<a id="L1"></a><span > </span>
+<a id="L2"></a><span > </span>
+<a id="L3"></a><span > </span>
+<a id="L4"></a><span > </span>
+<a id="L5"></a><span > </span>
+<a id="L6"></a><span > </span>
+<a id="L7"></a><span > </span>
+<a id="L8"></a><span > </span>
+<a id="L9"></a><span > </span>
+<a id="L10"></a><span > </span>
+<a id="L11"></a><span > </span>
+<a id="L12"></a><span > </span>
+<a id="L13"></a><span > </span>
+<a id="L14"></a><span > </span>
+<a id="L15"></a><span > </span>
+<a id="L16"></a><span > </span>
+<a id="L17"></a><span > </span>
+<a id="L18"></a><span > </span>
+<a id="L19"></a><span class="visited"> </span>
+<a id="L20"></a><span class="visited"> </span>
+<a id="L21"></a><span class="visited"> </span>
+<a id="L22"></a><span > </span>
+<a id="L23"></a><span class="visited"> </span>
+<a id="L24"></a><span > </span>
+<a id="L25"></a><span > </span>
+<a id="L26"></a><span class="visited"> </span>
+<a id="L27"></a><span class="visited"> </span>
+<a id="L28"></a><span class="visited"> </span>
+<a id="L29"></a><span > </span>
+<a id="L30"></a><span > </span>
+<a id="L31"></a><span class="visited"> </span>
+<a id="L32"></a><span class="visited"> </span>
+<a id="L33"></a><span class="visited"> </span>
+<a id="L34"></a><span > </span>
+<a id="L35"></a><span > </span>
+<a id="L36"></a><span class="visited"> </span>
+<a id="L37"></a><span class="visited"> </span>
+<a id="L38"></a><span class="visited"> </span>
+<a id="L39"></a><span class="visited"> </span>
+<a id="L40"></a><span > </span>
+<a id="L41"></a><span class="visited"> </span>
+<a id="L42"></a><span class="visited"> </span>
+<a id="L43"></a><span class="visited"> </span>
+<a id="L44"></a><span > </span>
+<a id="L45"></a><span class="visited"> </span>
+<a id="L46"></a><span class="visited"> </span>
+<a id="L47"></a><span > </span>
+<a id="L48"></a><span class="visited"> </span>
+<a id="L49"></a><span class="visited"> </span>
+<a id="L50"></a><span > </span>
+<a id="L51"></a><span class="visited"> </span>
+<a id="L52"></a><span class="visited"> </span>
+<a id="L53"></a><span class="visited"> </span>
+<a id="L54"></a><span > </span>
+<a id="L55"></a><span > </span>
+<a id="L56"></a><span > </span>
+<a id="L57"></a><span > </span>
+<a id="L58"></a><span > </span>
+<a id="L59"></a><span class="visited"> </span>
+<a id="L60"></a><span > </span>
+<a id="L61"></a><span > </span>
+<a id="L62"></a><span class="visited"> </span>
+<a id="L63"></a><span class="visited"> </span>
+<a id="L64"></a><span class="visited"> </span>
+<a id="L65"></a><span class="visited"> </span>
+<a id="L66"></a><span class="visited"> </span>
+<a id="L67"></a><span > </span>
+<a id="L68"></a><span > </span>
+<a id="L69"></a><span class="visited"> </span>
+<a id="L70"></a><span > </span>
+<a id="L71"></a><span class="visited"> </span>
+<a id="L72"></a><span class="visited"> </span>
+<a id="L73"></a><span class="visited"> </span>
+<a id="L74"></a><span > </span>
+<a id="L75"></a><span class="visited"> </span>
+<a id="L76"></a><span class="visited"> </span>
+<a id="L77"></a><span > </span>
+<a id="L78"></a><span class="visited"> </span>
+<a id="L79"></a><span class="visited"> </span>
+<a id="L80"></a><span class="visited"> </span>
+<a id="L81"></a><span class="visited"> </span>
+<a id="L82"></a><span > </span>
+<a id="L83"></a><span class="visited"> </span>
+<a id="L84"></a><span class="visited"> </span>
+<a id="L85"></a><span class="visited"> </span>
+<a id="L86"></a><span class="visited"> </span>
+<a id="L87"></a><span class="visited"> </span>
+<a id="L88"></a><span > </span>
+<a id="L89"></a><span > </span>
+<a id="L90"></a><span > </span>
+<a id="L91"></a><span > </span>
+<a id="L92"></a><span > </span>
+<a id="L93"></a><span > </span>
+<a id="L94"></a><span > </span>
+<a id="L95"></a><span > </span>
+<a id="L96"></a><span > </span>
+<a id="L97"></a><span class="visited"> </span>
+<a id="L98"></a><span class="visited"> </span>
+<a id="L99"></a><span class="visited"> </span>
+<a id="L100"></a><span class="visited"> </span>
+<a id="L101"></a><span > </span>
+<a id="L102"></a><span > </span>
+<a id="L103"></a><span > </span>
+<a id="L104"></a><span > </span>
+<a id="L105"></a><span > </span>
+<a id="L106"></a><span > </span>
+<a id="L107"></a><span class="visited"> </span>
+<a id="L108"></a><span > </span>
+<a id="L109"></a><span class="visited"> </span>
+<a id="L110"></a><span class="visited"> </span>
+<a id="L111"></a><span class="visited"> </span>
+<a id="L112"></a><span > </span>
+<a id="L113"></a><span > </span>
+<a id="L114"></a><span class="visited"> </span>
+<a id="L115"></a><span > </span>
+<a id="L116"></a><span class="visited"> </span>
+<a id="L117"></a><span > </span>
+<a id="L118"></a><span > </span>
+<a id="L119"></a><span class="visited"> </span>
+<a id="L120"></a><span class="visited"> </span>
+<a id="L121"></a><span class="visited"> </span>
+<a id="L122"></a><span class="visited"> </span>
+<a id="L123"></a><span > </span>
+<a id="L124"></a><span > </span>
+<a id="L125"></a><span class="visited"> </span>
+<a id="L126"></a><span class="visited"> </span>
+<a id="L127"></a><span class="visited"> </span>
+<a id="L128"></a><span > </span>
+<a id="L129"></a><span class="visited"> </span>
+<a id="L130"></a><span class="visited"> </span>
+<a id="L131"></a><span > </span>
+<a id="L132"></a><span class="visited"> </span>
+<a id="L133"></a><span > </span>
+<a id="L134"></a><span > </span>
+<a id="L135"></a><span > </span>
+<a id="L136"></a><span > </span>
+<a id="L137"></a><span > </span>
+</pre>
+      </div>
+      <div id="text-layer">
+        <pre id="line-numbers">
+<a href="#L1">  1</a>
+<a href="#L2">  2</a>
+<a href="#L3">  3</a>
+<a href="#L4">  4</a>
+<a href="#L5">  5</a>
+<a href="#L6">  6</a>
+<a href="#L7">  7</a>
+<a href="#L8">  8</a>
+<a href="#L9">  9</a>
+<a href="#L10"> 10</a>
+<a href="#L11"> 11</a>
+<a href="#L12"> 12</a>
+<a href="#L13"> 13</a>
+<a href="#L14"> 14</a>
+<a href="#L15"> 15</a>
+<a href="#L16"> 16</a>
+<a href="#L17"> 17</a>
+<a href="#L18"> 18</a>
+<a href="#L19"> 19</a>
+<a href="#L20"> 20</a>
+<a href="#L21"> 21</a>
+<a href="#L22"> 22</a>
+<a href="#L23"> 23</a>
+<a href="#L24"> 24</a>
+<a href="#L25"> 25</a>
+<a href="#L26"> 26</a>
+<a href="#L27"> 27</a>
+<a href="#L28"> 28</a>
+<a href="#L29"> 29</a>
+<a href="#L30"> 30</a>
+<a href="#L31"> 31</a>
+<a href="#L32"> 32</a>
+<a href="#L33"> 33</a>
+<a href="#L34"> 34</a>
+<a href="#L35"> 35</a>
+<a href="#L36"> 36</a>
+<a href="#L37"> 37</a>
+<a href="#L38"> 38</a>
+<a href="#L39"> 39</a>
+<a href="#L40"> 40</a>
+<a href="#L41"> 41</a>
+<a href="#L42"> 42</a>
+<a href="#L43"> 43</a>
+<a href="#L44"> 44</a>
+<a href="#L45"> 45</a>
+<a href="#L46"> 46</a>
+<a href="#L47"> 47</a>
+<a href="#L48"> 48</a>
+<a href="#L49"> 49</a>
+<a href="#L50"> 50</a>
+<a href="#L51"> 51</a>
+<a href="#L52"> 52</a>
+<a href="#L53"> 53</a>
+<a href="#L54"> 54</a>
+<a href="#L55"> 55</a>
+<a href="#L56"> 56</a>
+<a href="#L57"> 57</a>
+<a href="#L58"> 58</a>
+<a href="#L59"> 59</a>
+<a href="#L60"> 60</a>
+<a href="#L61"> 61</a>
+<a href="#L62"> 62</a>
+<a href="#L63"> 63</a>
+<a href="#L64"> 64</a>
+<a href="#L65"> 65</a>
+<a href="#L66"> 66</a>
+<a href="#L67"> 67</a>
+<a href="#L68"> 68</a>
+<a href="#L69"> 69</a>
+<a href="#L70"> 70</a>
+<a href="#L71"> 71</a>
+<a href="#L72"> 72</a>
+<a href="#L73"> 73</a>
+<a href="#L74"> 74</a>
+<a href="#L75"> 75</a>
+<a href="#L76"> 76</a>
+<a href="#L77"> 77</a>
+<a href="#L78"> 78</a>
+<a href="#L79"> 79</a>
+<a href="#L80"> 80</a>
+<a href="#L81"> 81</a>
+<a href="#L82"> 82</a>
+<a href="#L83"> 83</a>
+<a href="#L84"> 84</a>
+<a href="#L85"> 85</a>
+<a href="#L86"> 86</a>
+<a href="#L87"> 87</a>
+<a href="#L88"> 88</a>
+<a href="#L89"> 89</a>
+<a href="#L90"> 90</a>
+<a href="#L91"> 91</a>
+<a href="#L92"> 92</a>
+<a href="#L93"> 93</a>
+<a href="#L94"> 94</a>
+<a href="#L95"> 95</a>
+<a href="#L96"> 96</a>
+<a href="#L97"> 97</a>
+<a href="#L98"> 98</a>
+<a href="#L99"> 99</a>
+<a href="#L100">100</a>
+<a href="#L101">101</a>
+<a href="#L102">102</a>
+<a href="#L103">103</a>
+<a href="#L104">104</a>
+<a href="#L105">105</a>
+<a href="#L106">106</a>
+<a href="#L107">107</a>
+<a href="#L108">108</a>
+<a href="#L109">109</a>
+<a href="#L110">110</a>
+<a href="#L111">111</a>
+<a href="#L112">112</a>
+<a href="#L113">113</a>
+<a href="#L114">114</a>
+<a href="#L115">115</a>
+<a href="#L116">116</a>
+<a href="#L117">117</a>
+<a href="#L118">118</a>
+<a href="#L119">119</a>
+<a href="#L120">120</a>
+<a href="#L121">121</a>
+<a href="#L122">122</a>
+<a href="#L123">123</a>
+<a href="#L124">124</a>
+<a href="#L125">125</a>
+<a href="#L126">126</a>
+<a href="#L127">127</a>
+<a href="#L128">128</a>
+<a href="#L129">129</a>
+<a href="#L130">130</a>
+<a href="#L131">131</a>
+<a href="#L132">132</a>
+<a href="#L133">133</a>
+<a href="#L134">134</a>
+<a href="#L135">135</a>
+<a href="#L136">136</a>
+<a href="#L137">137</a>
+</pre>
+<pre><code class="ocaml">open Core
+
+module type Data = sig
+  include Ring.S
+
+  val next : string -&gt; (string * t) option
+end
+
+module type Eval = sig
+  type t
+
+  val eval : string -&gt; (t, string) result
+end
+
+module Make_data (Ring : Ring.S) : Data with type t = Ring.t = struct
+  include Ring
+
+  let check_seperator (c : char) : bool =
+    <span data-count="349">(</span>not (Char.is_digi<span data-count="349">t</span> c))
+    &amp;&amp; <span data-count="209">(</span>not (Char.( = <span data-count="209">)</span> c '/'))
+    &amp;&amp; <span data-count="171">n</span>ot (Char.( = <span data-count="171">)</span> c '-')
+
+  let check_op (c : char) : bool = <span data-count="225">C</span>har.( = <span data-count="225">)</span> c '+<span data-count="28">'</span> || Char.( = ) c '*'
+
+  let check_max_munch (value : string) (is_valid : bool) : bool =
+    <span data-count="193">m</span>atch Ring.of_string value with
+    | <span data-count="106">N</span>one -&gt; is_valid
+    | <span data-count="97">S</span>ome _ -&gt; false
+  
+  let check_is_valid (value : string) : bool = 
+    <span data-count="359">m</span>atch Ring.of_string value with
+    | <span data-count="272">N</span>one -&gt; false
+    | <span data-count="97">S</span>ome _ -&gt; true
+
+  let next (str : string) : (string * t) option =
+    <span data-count="219">l</span>et rec munch_value (s : string) (value : string): string * string =
+      <span data-count="351">l</span>et is_valid = check_is_valid value in
+      <span data-count="351">i</span>f String.lengt<span data-count="350">h</span> s = <span data-count="20">0</span> || check_seperato<span data-count="340">r</span> s.[0<span data-count="166">]</span> then <span data-count="177">(</span>s, value)
+      else <span data-count="193">i</span>f check_max_munch (value ^ String.mak<span data-count="192">e</span> 1 s.[0]) is_valid then <span data-count="6">(</span>s, value)
+      else
+        <span data-count="178">m</span>unch_value
+          (String.su<span data-count="177">b</span> s ~pos:1 ~len:(String.lengt<span data-count="186">h</span> s - 1))
+          (value ^ String.mak<span data-count="178">e</span> 1 s.[0])
+    in
+    if String.lengt<span data-count="227">h</span> str = 0 then <span data-count="12">N</span>one
+    else <span data-count="216">i</span>f check_op str.[0] then <span data-count="51">N</span>one
+    else
+      <span data-count="183">l</span>et rem_s, next_val = munch_value str "" in
+      <span data-count="182">i</span>f String.( = ) next_val "" then <span data-count="81">N</span>one
+      else
+        <span data-count="93">m</span>atch Ring.of_string next_val with
+        | <span data-count="19">N</span>one -&gt; None
+        | <span data-count="83">S</span>ome v -&gt; Some (rem_s, v)
+end
+
+module Make_eval (Data : Data) : Eval with type t = Data.t = struct
+  type t = Data.t
+
+  let check_op (c : char) : bool = <span data-count="127">C</span>har.( = <span data-count="119">)</span> c '+<span data-count="35">'</span> || Char.( = ) c '*'
+
+  let compute (val_acc : t list) (op : char) : t list option =
+    <span data-count="36">m</span>atch val_acc with
+    | <span data-count="29">e</span>1 :: e2 :: tl -&gt;
+        if Char.( = ) op '+' then <span data-count="23">S</span>ome (Data.( + <span data-count="31">)</span> e1 e2 :: tl)
+        else <span data-count="6">S</span>ome (Data.( * <span data-count="7">)</span> e1 e2 :: tl)
+    | <span data-count="7">_</span> -&gt; None
+
+  let eval (str : string) : (t, string) result =
+    <span data-count="49">l</span>et rec parse_input (s : string) (val_acc : t list) (list_len : int) :
+        (t, string) result =
+      <span data-count="221">i</span>f String.lengt<span data-count="204">h</span> s = 0 then
+        <span data-count="31">i</span>f list_len &gt; 1 then <span data-count="3">E</span>rror "unmatched"
+        else <span data-count="31">m</span>atch val_acc with <span data-count="21">v</span> :: _ -&gt; Ok v | <span data-count="13">[</span>] -&gt; Error "unmatched"
+      else
+        <span data-count="190">m</span>atch Data.next s with
+        | <span data-count="69">S</span>ome (next_s, value) -&gt;
+            parse_input next_s (value :: val_acc) (list_len + 1)
+        | <span data-count="122">N</span>one -&gt; (
+            let next_s = String.sub s ~pos:1 ~len:(String.lengt<span data-count="115">h</span> s - 1) in
+            <span data-count="114">m</span>atch s.[0] with
+            | <span data-count="118">c</span>h when check_o<span data-count="120">p</span> ch -&gt; <span data-count="34">(</span>
+                match compute val_acc ch with
+                | <span data-count="42">S</span>ome rem_acc -&gt; parse_input next_s rem_acc (list_len - 1)
+                | <span data-count="20">N</span>one -&gt; Error "unmatched")
+            | <span data-count="86">c</span>h when Char.is_whitespac<span data-count="90">e</span> ch -&gt;
+                <span data-count="81">p</span>arse_input next_s val_acc list_len
+            | <span data-count="21">_</span> -&gt; Error "illegal character")
+    in
+    parse_input str [] 0
+end
+
+module Z4_data = Make_data (Ring.Z4)
+
+module Int_data = Make_data (struct
+  type t = int
+
+  let ( + ) (e1 : t) (e2 : t) = <span data-count="17">e</span>1 + e2
+  let ( * ) (e1 : t) (e2 : t) = <span data-count="11">e</span>1 * e2
+  let of_string (e : string) = <span data-count="179">i</span>nt_of_string_opt e
+  let to_string (e : t) = <span data-count="11">s</span>tring_of_int e
+end)
+
+module Rat_data = Make_data (struct
+  type t = int * int
+
+  let rec gcd (e1 : int) (e2 : int) : int =
+    <span data-count="66680632">i</span>f e1 &lt; e2 then <span data-count="22226843">g</span>cd e2 e1 else <span data-count="44453788">i</span>f e2 = 0 then <span data-count="22226896">e</span>1 else <span data-count="22226892">g</span>cd e2 (e1 <span data-count="22226891">%</span> e2)
+  let reduce ((n, d) : t) : t =
+    <span data-count="22226884">l</span>et common = if n &gt;= 0 then <span data-count="11511327">g</span>c<span data-count="11511328">d</span> n d else <span data-count="10715551">g</span>c<span data-count="10715562">d</span> (<span data-count="10715582">-</span>n) d in
+    if d = 1 then <span data-count="42">(</span>n, d)
+    else <span data-count="22226851">(</span>(Int.( / <span data-count="22226840">)</span> n common),(Int.( / <span data-count="22226852">)</span> d common))
+
+  let ( + ) ((e1n, e1d) : t) ((e2n, e2d) : t) : t =
+    <span data-count="11">r</span>educe ((e1n * e2d) + (e2n * e1d), e1d * e2d)
+
+  let ( * ) ((e1n, e1d) : t) ((e2n, e2d) : t) : t = <span data-count="15">r</span>educe (e1n * e2n, e1d * e2d)
+
+  let of_string (str : string) : t option =
+    <span data-count="323">l</span>et splits = String.split ~on:'/' str in
+    <span data-count="317">i</span>f List.lengt<span data-count="329">h</span> splits &lt;&gt; 2 then <span data-count="149">N</span>one else 
+    <span data-count="207">m</span>atch String.split ~on:'/' str with
+    | <span data-count="193">n</span> :: d :: _ -&gt; (
+      try
+        let num = int_of_string n in 
+        <span data-count="209">l</span>et den = int_of_string d in
+        <span data-count="117">i</span>f den &gt;= 0 then <span data-count="104">S</span>ome (reduc<span data-count="121">e</span> (num, den)) else
+          <span data-count="42">N</span>one
+      with
+      | <span data-count="116">_</span> -&gt; None)
+    | <span data-count="30">_</span> -&gt; None
+  
+  let to_string ((n, d) : t) : string = <span data-count="23">s</span>tring_of_in<span data-count="33">t</span> n ^ "/" ^ string_of_in<span data-count="47">t</span> d
+end)
+
+module Z4_eval = Make_eval (Z4_data)
+module Int_eval = Make_eval (Int_data)
+module Rat_eval = Make_eval (Rat_data)
+</code></pre>
+      </div>
+    </div>
+    <script src="../coverage.js"></script>
+  </body>
+</html>
