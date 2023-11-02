@@ -1,13 +1,11 @@
 (library
-  (name lib)
-  (modules lib)
-  (libraries core)
-  (preprocess
+ (name lib)
+ (modules lib)
+ (libraries core)
+ (preprocess
   (pps ppx_jane bisect_ppx)))
 
 (executable
-  (name ngrams)
-  (modules ngrams)
-  (libraries
-    lib
-    core))
+ (name ngrams)
+ (modules ngrams)
+ (libraries lib core))

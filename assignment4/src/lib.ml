@@ -197,43 +197,45 @@ module Ngram_key (Item : Map.Key) : Map.Key with type t = Item.t list = struct
 end
 
 module Dist (Item : Core.Map.Key) = struct
-  module Ngram_map = Map.Make(Ngram_key(Item))
+  module Ngram_map = Map.Make (Ngram_key (Item))
 
-  type t = (Item.t list) Ngram_map.t
+  type t = Item.t list Ngram_map.t
+
   let ngram_find (map : t) (key : Item.t list) : Item.t list option =
     Map.find map key
-
 
   let make_distribution (input : Item.t list) ~(n : int) : t =
     let rec process_ngrams (acc : Item.t list) (inp : Item.t list) (d : t) : t =
       match inp with
       | [] -> d
       | next :: rem ->
-        let new_map = 
-          match ngram_find d acc with
-          | Some ng ->
-            let updated_ngram = next :: ng in
-            Map.add_exn d ~key:acc ~data:updated_ngram
-          | None ->
-            Map.add_exn d ~key:acc ~data:[next]
+          let new_map =
+            match ngram_find d acc with
+            | Some _ ->
+                Map.update d acc ~f:(function
+                  | Some x -> next :: x
+                  | None -> [ next ])
+            | None -> Map.add_exn d ~key:acc ~data:[ next ]
           in
-          process_ngrams ((List.drop acc 1) @ [next]) rem new_map
-        in
+          process_ngrams (List.drop acc 1 @ [ next ]) rem new_map
+    in
     let dist = Ngram_map.empty in
-    if List.length input < n then dist else process_ngrams (List.take input (n-1)) (List.drop input (n-1)) dist
+    if List.length input < n then dist
+    else process_ngrams (List.take input (n - 1)) (List.drop input (n - 1)) dist
 
-  let sample_random_sequence (input : Item.t list) ~(k:int) (map : t) : Item.t list =
-    let rec generate_sequence (sequence : Item.t list) (ngram : Item.t list) (length : int) =
-        if length >= k then List.rev sequence
-        else
-          match ngram_find map ngram with
-          | Some ng ->
-            let next =
-              List.nth_exn ng (Random.int (List.length ng))
-            in
-            generate_sequence (next :: ng) ((List.tl_exn ngram) @ [next]) (length + 1)
-          | None -> List.rev sequence
-            
+  let sample_random_sequence (input : Item.t list) ~(k : int) (map : t) :
+      Item.t list =
+    let rec generate_sequence (sequence : Item.t list) (ngram : Item.t list)
+        (length : int) =
+      if length >= k then List.rev sequence
+      else
+        match ngram_find map ngram with
+        | Some ng ->
+            let next = List.nth_exn ng (Random.int (List.length ng)) in
+            generate_sequence (next :: sequence)
+              (List.tl_exn ngram @ [ next ])
+              (length + 1)
+        | None -> List.rev sequence
     in
     generate_sequence (List.rev input) input (List.length input)
 end

@@ -41,5 +41,4 @@
 
 open Core
 
-let () =
-  print_string "Your implementation here!"
+let () = print_string "Your implementation here!"
