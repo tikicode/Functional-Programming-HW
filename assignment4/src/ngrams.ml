@@ -60,11 +60,16 @@ let get_n_most_frequent (corpus : string list) ~(n : int) ~(k : int) =
 
 let get_sample (ctx : string list) ~(n : int) ~(k : int) (dist : t) =
   let context =
-    if List.length ctx > 0 then
-      ctx |> List.rev |> Fn.flip List.take (n - 1) |> List.rev
-    else sample_random_context dist
+    match List.length ctx with
+    | 0 -> sample_random_context dist
+    | _ -> ctx |> List.rev |> Fn.flip List.take (n - 1) |> List.rev
   in
-  let sequence = sample_random_sequence context ~k:(k - n) dist in
+  let init_length =
+    match List.length ctx with 0 -> List.length context | _ -> List.length ctx
+  in
+  let sequence =
+    sample_random_sequence context ~k:(k - init_length + n - 1) dist
+  in
   let final_seq =
     ctx |> List.rev
     |> Fn.flip List.drop (n - 1)
@@ -88,15 +93,15 @@ let main =
         flag "--sample"
           (optional_with_default 0 int)
           ~doc:"Number of sampled n-grams from input initial n-gram"
-      and context = anon (sequence ("[initial-words...]" %: string))
-      in
+      and context = anon (sequence ("[initial-words...]" %: string)) in
       fun () ->
         let corpus = Stdio.In_channel.read_all corpus_file |> parse_corpus in
         let d = corpus |> make_distribution ~n in
         if sample > 0 && most_frequent > 0 then
           "Pass either --sample or --most-frequent" |> Stdio.printf "%s\n"
         else if sample > 0 then get_sample context ~n ~k:sample d
-        else if most_frequent > 0 then get_n_most_frequent corpus ~n ~k:most_frequent
+        else if most_frequent > 0 then
+          get_n_most_frequent corpus ~n ~k:most_frequent
         else
           "Pass with either --sample or --most-frequent" |> Stdio.printf "%s\n")
 

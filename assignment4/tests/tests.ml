@@ -98,6 +98,7 @@ let test_make_distribution_bi_int _ =
 let test_sample_random_sequence_int _ =
   let test_random_tri_int = make_distribution [ 1; 2; 3; 4; 5 ] ~n:3 in
   let test_random_bi_int = make_distribution [ 1; 2; 3; 4; 5 ] ~n:2 in
+  let test_random_uni_int = make_distribution [ 1; 2; 3; 4; 5 ] ~n:1 in
 
   assert_equal [ 1; 2; 3; 4; 5 ]
   @@ sample_random_sequence [ 1; 2 ] ~k:5 test_random_tri_int;
@@ -119,7 +120,10 @@ let test_sample_random_sequence_int _ =
   assert_equal [ 1; 2; 3 ]
   @@ sample_random_sequence [ 1; 2; 3 ] ~k:5 test_random_bi_int;
 
-  assert_equal [] @@ sample_random_sequence [] ~k:5 test_random_bi_int
+  assert_equal [] @@ sample_random_sequence [] ~k:5 test_random_bi_int;
+
+  assert_equal 2
+  @@ List.length (sample_random_sequence [] ~k:2 test_random_uni_int)
 
 let dist_tri_int = make_distribution [ 1; 2; 3; 4; 4; 4; 2; 2; 3; 1 ] ~n:3
 let dist_bi_int = make_distribution [ 1; 2; 3; 4; 4; 4; 2; 2; 3; 1 ] ~n:2
@@ -354,7 +358,8 @@ let test_quickcheck_sanitize _ =
       let overall_result =
         List.exists results ~f:(fun el -> Bool.( = ) el false)
       in
-      assert_bool "Failed sanitize" (Bool.( <> ) true overall_result))
+      assert_bool "Failed sanitize" (Bool.( <> ) true overall_result));
+      assert_bool "Failed sanitize"
 
 let distribution_tests =
   "Dist tests"

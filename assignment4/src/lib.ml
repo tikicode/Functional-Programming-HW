@@ -223,7 +223,7 @@ module Dist (Item : Map.Key) (Random : R) = struct
               | Some x -> next :: x
               | None -> [ next ])
           in
-          process_ngrams (List.drop ctx 1 @ [ next ]) rem new_map
+          process_ngrams (List.drop (ctx @ [ next ]) 1) rem new_map
     in
     process_ngrams
       (n - 1 |> List.take input)
@@ -239,9 +239,12 @@ module Dist (Item : Map.Key) (Random : R) = struct
         match ngram_find map ngram with
         | Some ng ->
             let next = List.nth_exn ng (List.length ng |> Random.int) in
-            generate_sequence (next :: sequence)
-              (List.tl_exn ngram @ [ next ])
-              (length + 1)
+            let new_gram =
+              match List.length ngram with
+              | 0 -> []
+              | _ -> List.tl_exn ngram @ [ next ]
+            in
+            generate_sequence (next :: sequence) new_gram (length + 1)
         | None -> List.rev sequence
     in
     generate_sequence (List.rev input) input (List.length input)
@@ -279,7 +282,7 @@ module Dist (Item : Map.Key) (Random : R) = struct
               | Some x -> x + 1
               | None -> 1)
           in
-          ngram_counts (List.drop ctx 1 @ [ next ]) rem new_map
+          ngram_counts (List.drop (ctx @ [ next ]) 1) rem new_map
     in
     ngram_counts
       (n - 1 |> List.take input)
