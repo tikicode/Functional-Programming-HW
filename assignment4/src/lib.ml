@@ -192,36 +192,43 @@ in natural language is strings). An appropriate signature would be `Item : Core.
 
 *)
 
-module Ngram_key (Item : Map.Key) : Map.Key with type t = Item.t list = struct
-  type t = Item.t list [@@deriving compare, sexp]
+module type R = sig
+  val int : int -> int
 end
 
-module Dist (Item : Core.Map.Key) = struct
-  module Ngram_map = Map.Make (Ngram_key (Item))
+module Dist (Item : Map.Key) (Random : R) = struct
+  module Ngram_key : Map.Key with type t = Item.t list = struct
+    type t = Item.t list [@@deriving compare, sexp]
+  end
+
+  module Random = Random
+  module Ngram_map = Map.Make (Ngram_key)
 
   type t = Item.t list Ngram_map.t
 
   let ngram_find (map : t) (key : Item.t list) : Item.t list option =
     Map.find map key
 
+  let to_list (dist : 'a Ngram_map.t) : (Item.t list * 'a) list =
+    dist |> Map.to_sequence |> Sequence.to_list
+
   let make_distribution (input : Item.t list) ~(n : int) : t =
-    let rec process_ngrams (acc : Item.t list) (inp : Item.t list) (d : t) : t =
+    let rec process_ngrams (ctx : Item.t list) (inp : Item.t list) (dist : t) :
+        t =
       match inp with
-      | [] -> d
+      | [] -> dist
       | next :: rem ->
           let new_map =
-            match ngram_find d acc with
-            | Some _ ->
-                Map.update d acc ~f:(function
-                  | Some x -> next :: x
-                  | None -> [ next ])
-            | None -> Map.add_exn d ~key:acc ~data:[ next ]
+            Map.update dist ctx ~f:(function
+              | Some x -> next :: x
+              | None -> [ next ])
           in
-          process_ngrams (List.drop acc 1 @ [ next ]) rem new_map
+          process_ngrams (List.drop ctx 1 @ [ next ]) rem new_map
     in
-    let dist = Ngram_map.empty in
-    if List.length input < n then dist
-    else process_ngrams (List.take input (n - 1)) (List.drop input (n - 1)) dist
+    process_ngrams
+      (n - 1 |> List.take input)
+      (n - 1 |> List.drop input)
+      Ngram_map.empty
 
   let sample_random_sequence (input : Item.t list) ~(k : int) (map : t) :
       Item.t list =
@@ -231,11 +238,62 @@ module Dist (Item : Core.Map.Key) = struct
       else
         match ngram_find map ngram with
         | Some ng ->
-            let next = List.nth_exn ng (Random.int (List.length ng)) in
+            let next = List.nth_exn ng (List.length ng |> Random.int) in
             generate_sequence (next :: sequence)
               (List.tl_exn ngram @ [ next ])
               (length + 1)
         | None -> List.rev sequence
     in
     generate_sequence (List.rev input) input (List.length input)
+
+  let sample_random_context (dist : t) : Item.t list =
+    let weighted_keys =
+      Map.fold dist ~init:[] ~f:(fun ~key ~data acc ->
+          List.length data |> List.init ~f:(fun _ -> key) |> List.append acc)
+    in
+    match List.length weighted_keys with
+    | 0 -> []
+    | len -> len |> Random.int |> List.nth_exn weighted_keys
+
+  (* helper function for comparing ngram frequency*)
+  let compare_ngrams ((list1, count1) : Item.t list * int)
+      ((list2, count2) : Item.t list * int) : int =
+    match compare count1 count2 with
+    | 0 -> Ngram_key.compare list1 list2
+    | cmp -> -cmp
+
+  (* reusing logic from make_distribution for speed
+     (sorry if this jawn is long after running dune fmt) *)
+  let most_freq_ngrams (input : Item.t list) ~(n : int) ~(k : int) :
+      (Item.t list * int) list =
+    let rec ngram_counts (ctx : Item.t list) (inp : Item.t list)
+        (acc : int Ngram_map.t) : (Item.t list * int) list =
+      match inp with
+      | [] ->
+          acc |> to_list
+          |> List.sort ~compare:compare_ngrams
+          |> Fn.flip List.take k
+      | next :: rem ->
+          let new_map =
+            Map.update acc (ctx @ [ next ]) ~f:(function
+              | Some x -> x + 1
+              | None -> 1)
+          in
+          ngram_counts (List.drop ctx 1 @ [ next ]) rem new_map
+    in
+    ngram_counts
+      (n - 1 |> List.take input)
+      (n - 1 |> List.drop input)
+      Ngram_map.empty
 end
+
+let sanitize (s : string) : string =
+  String.fold s ~init:"" ~f:(fun acc c ->
+      if Char.is_alphanum c then acc ^ String.make 1 (Char.lowercase c) else acc)
+
+let parse_corpus (corpus : string) : string list =
+  let whitespaces = [ ' '; '\t'; '\r'; '\n' ] in
+  corpus
+  |> String.split_on_chars ~on:whitespaces
+  |> List.map ~f:sanitize
+  |> List.filter ~f:(fun str -> String.length str > 0)
