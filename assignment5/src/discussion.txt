@@ -12,7 +12,17 @@ respectively. Show your work so you can get partial credit.
 
 Write your answer below.
 
+(a) The time complexity of the non-monadic approach is O(n). This is because in a stack, 
+the push and pop operations are O(1) or constant time. As we fold over the string, we check
+each character is a parenthesis in O(1) time since we check with a simple match statement. If
+the character is a parenthesis, we add it to the stack or remove a parenthesis from the stack 
+O(1) time. Finally, the is_empty function is also O(1) time and is our last operation in the 
+are_balanced_mutable function. Therefore, the overall time complexity is O(n) from iterating 
+over the string. 
 
-
-
-
+(b) Similarly, the time complexity of the monadic approach is also O(n) since our code for the
+are_balanced_monadic function follows the same logic as the are_balanced_mutable function.  
+Our stack operations are all in constant time, as are the monad bind and return operations. 
+However, due to the additional abstraction introduced by monads, there may be a slighly overhead 
+by a constant factor in the runtime compared to the mutable approach. This logic follows for 
+the exception stack implementation.
